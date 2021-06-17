@@ -1,5 +1,6 @@
 using Loans.Domain.Applications;
 using NUnit.Framework;
+using Moq;
 
 namespace Loans.Tests
 {
@@ -18,8 +19,11 @@ namespace Loans.Tests
                                                   "133 Pluralsight Drive, Draper, Utah",
                                                   64_999);
 
-            // Throws exception because of null checks in the LAP
-            var sut = new LoanApplicationProcessor(null, null);
+            var mockIdentityVerifier = new Mock<IIdentityVerifier>();
+            var mockCreditScorer = new Mock<ICreditScorer>();
+
+            var sut = new LoanApplicationProcessor(mockIdentityVerifier.Object,
+                                                   mockCreditScorer.Object);
 
             sut.Process(application);
 
