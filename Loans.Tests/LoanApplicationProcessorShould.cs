@@ -100,7 +100,9 @@ namespace Loans.Tests
             sut.Process(application);
 
             mockCreditScorer.Verify(
-                x => x.CalculateScore("Sarah", "133 Pluralsight Drive, Draper, Utah"));
+                x => x.CalculateScore("Sarah",
+                                      "133 Pluralsight Drive, Draper, Utah"),
+                Times.Once);
         }
 
         [Test]
