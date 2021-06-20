@@ -56,7 +56,7 @@ namespace Loans.Domain.Applications
             // }
             #endregion
 
-            IdentityVerificationStatus status = null;
+            var status = (IdentityVerificationStatus) null;
 
             _identityVerifier.Validate(application.GetApplicantName(),
                                        application.GetApplicantAge(),
