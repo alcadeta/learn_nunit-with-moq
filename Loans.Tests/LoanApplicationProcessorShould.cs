@@ -74,7 +74,7 @@ namespace Loans.Tests
         }
 
         [Test]
-        public void InitializeIdentityVerifier()
+        public void CalculateScore()
         {
             var product = new LoanProduct(99, "Loan", 5.25m);
             var amount = new LoanAmount("USD", 200_000);
@@ -99,8 +99,8 @@ namespace Loans.Tests
                                                    mockCreditScorer.Object);
             sut.Process(application);
 
-            // Will pass if the Initialize method is called and fail if not.
-            mockIdentityVerifier.Verify(x => x.Initialize());
+            mockCreditScorer.Verify(
+                x => x.CalculateScore("Sarah", "133 Pluralsight Drive, Draper, Utah"));
         }
 
         [Test]
