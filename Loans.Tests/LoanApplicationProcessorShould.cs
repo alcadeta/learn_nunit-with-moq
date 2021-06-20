@@ -30,6 +30,11 @@ namespace Loans.Tests
             Assert.That(application.GetIsAccepted(), Is.False);
         }
 
+        delegate void ValidateCallback(string applicantName,
+                                       int applicantAge,
+                                       string applicantAddress,
+                                       ref IdentityVerificationStatus status);
+
         [Test]
         public void Accept()
         {
@@ -45,24 +50,43 @@ namespace Loans.Tests
 
             var mockIdentityVerifier = new Mock<IIdentityVerifier>();
 
+            mockIdentityVerifier
+                // Whatever is passed for the `ref` parameter...
+                .Setup(x => x.Validate("Sarah",
+                                       25,
+                                       "133 Pluralsight Drive, Draper, Utah",
+                                       ref It.Ref<IdentityVerificationStatus>.IsAny))
+                // ...assign a new IdentityVerificationStatus of `true` to it.
+                .Callback(new ValidateCallback((string applicantName,
+                                                int applicantAge,
+                                                string applicantAddress,
+                                                ref IdentityVerificationStatus status) =>
+                                                   status = new IdentityVerificationStatus(true)));
+
+            #region block1
             // // When we don't care what argument is passed in to the mock method, we can use It.IsAny<T>
             // mockIdentityVerifier.Setup(x => x.Validate(It.IsAny<string>(),
             //                                            It.IsAny<int>(),
             //                                            It.IsAny<string>()))
             //                     .Returns(true);
+            #endregion
 
+            #region block2
             // mockIdentityVerifier.Setup(x => x.Validate("Sarah",
             //                                            25,
             //                                            "133 Pluralsight Drive, Draper, Utah"))
             //                     .Returns(true);
+            #endregion
 
+            #region block3
             // When using an "out" parameter, .Returns method doesn't work on the mock object. Instead,
             // whatever value we give to the "out" parameter is the return value.
-            var isValidOutValue = true;
-            mockIdentityVerifier.Setup(x => x.Validate("Sarah",
-                                                       25,
-                                                       "133 Pluralsight Drive, Draper, Utah",
-                                                       out isValidOutValue));
+            // var isValidOutValue = true;
+            // mockIdentityVerifier.Setup(x => x.Validate("Sarah",
+            //                                            25,
+            //                                            "133 Pluralsight Drive, Draper, Utah",
+            //                                            out isValidOutValue));
+            #endregion
 
             var mockCreditScorer = new Mock<ICreditScorer>();
 

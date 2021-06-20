@@ -37,21 +37,39 @@ namespace Loans.Domain.Applications
 
             _identityVerifier.Initialize();
 
+            #region block1
             // var isValidIdentity = _identityVerifier.Validate(application.GetApplicantName(),
             //                                                  application.GetApplicantAge(),
             //                                                  application.GetApplicantAddress());
+            #endregion
+
+            #region block2
+            // _identityVerifier.Validate(application.GetApplicantName(),
+            //                            application.GetApplicantAge(),
+            //                            application.GetApplicantAddress(),
+            //                            out var isValidIdentity);
+            //
+            // if (!isValidIdentity)
+            // {
+            //     application.Decline();
+            //     return;
+            // }
+            #endregion
+
+            IdentityVerificationStatus status = null;
 
             _identityVerifier.Validate(application.GetApplicantName(),
                                        application.GetApplicantAge(),
                                        application.GetApplicantAddress(),
-                                       out var isValidIdentity);
+                                       ref status);
 
-            if (!isValidIdentity)
+            if (!status.Passed)
             {
                 application.Decline();
                 return;
             }
 
+            #region block3
             // _creditScorer.CalculateScore(application.GetApplicantName(),
             //                              application.GetApplicantAddress());
             //
@@ -60,6 +78,7 @@ namespace Loans.Domain.Applications
             //     application.Decline();
             //     return;
             // }
+            #endregion
 
             application.Accept();
         }
