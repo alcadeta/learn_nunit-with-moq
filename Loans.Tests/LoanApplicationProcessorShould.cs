@@ -55,13 +55,22 @@ namespace Loans.Tests
                                 .Returns(true);
 
             var mockCreditScorer = new Mock<ICreditScorer>();
+
+            // Enable change tracking for all properties. Should be called before
+            // any property-specific setup so that it doesn't override them.
+            mockCreditScorer.SetupAllProperties();
+
             mockCreditScorer.Setup(x => x.ScoreResult.ScoreValue.Score).Returns(300);
+
+            // // Enable change tracking for a specific property
+            // mockCreditScorer.SetupProperty(x => x.Count);
 
             var sut = new LoanApplicationProcessor(mockIdentityVerifier.Object,
                                                    mockCreditScorer.Object);
             sut.Process(application);
 
             Assert.That(application.GetIsAccepted(), Is.True);
+            Assert.That(mockCreditScorer.Object.Count, Is.EqualTo(1));
         }
 
         [Test]

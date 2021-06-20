@@ -7,5 +7,7 @@
         void CalculateScore(string applicantName, string applicantAddress);
 
         ScoreResult ScoreResult { get; }
+
+        int Count { get; set; }
     }
 }
