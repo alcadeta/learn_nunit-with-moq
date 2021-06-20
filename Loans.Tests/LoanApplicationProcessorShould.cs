@@ -74,6 +74,36 @@ namespace Loans.Tests
         }
 
         [Test]
+        public void InitializeIdentityVerifier()
+        {
+            var product = new LoanProduct(99, "Loan", 5.25m);
+            var amount = new LoanAmount("USD", 200_000);
+            var application = new LoanApplication(42,
+                                                  product,
+                                                  amount,
+                                                  "Sarah",
+                                                  25,
+                                                  "133 Pluralsight Drive, Draper, Utah",
+                                                  65_000);
+
+            var mockIdentityVerifier = new Mock<IIdentityVerifier>();
+            mockIdentityVerifier.Setup(x => x.Validate("Sarah",
+                                                       25,
+                                                       "133 Pluralsight Drive, Draper, Utah"))
+                                .Returns(true);
+
+            var mockCreditScorer = new Mock<ICreditScorer>();
+            mockCreditScorer.Setup(x => x.ScoreResult.ScoreValue.Score).Returns(300);
+
+            var sut = new LoanApplicationProcessor(mockIdentityVerifier.Object,
+                                                   mockCreditScorer.Object);
+            sut.Process(application);
+
+            // Will pass if the Initialize method is called and fail if not.
+            mockIdentityVerifier.Verify(x => x.Initialize());
+        }
+
+        [Test]
         public void NullReturnExample()
         {
             var mock = new Mock<INullExample>();
