@@ -4,9 +4,9 @@ namespace Loans.Domain.Applications
 {
     public class LoanApplicationProcessor
     {
-        private const decimal MinimumSalary = 65_000;
-        private const int MinimumAge = 18;
-        private const int MinimumCreditScore = 300;
+        private const decimal _MinimumSalary = 65_000;
+        private const int _MinimumAge = 18;
+        private const int _MinimumCreditScore = 300;
 
         private readonly IIdentityVerifier _identityVerifier;
         private readonly ICreditScorer _creditScorer;
@@ -23,13 +23,13 @@ namespace Loans.Domain.Applications
 
         public void Process(LoanApplication application)
         {
-            if (application.GetApplicantSalary() < MinimumSalary)
+            if (application.GetApplicantSalary() < _MinimumSalary)
             {
                 application.Decline();
                 return;
             }
 
-            if (application.GetApplicantAge() < MinimumAge)
+            if (application.GetApplicantAge() < _MinimumAge)
             {
                 application.Decline();
                 return;
@@ -37,48 +37,24 @@ namespace Loans.Domain.Applications
 
             _identityVerifier.Initialize();
 
-            #region block1
-            // var isValidIdentity = _identityVerifier.Validate(application.GetApplicantName(),
-            //                                                  application.GetApplicantAge(),
-            //                                                  application.GetApplicantAddress());
-            #endregion
+            var isValidIdentity = _identityVerifier.Validate(application.GetApplicantName(),
+                                                             application.GetApplicantAge(),
+                                                             application.GetApplicantAddress());
 
-            #region block2
-            // _identityVerifier.Validate(application.GetApplicantName(),
-            //                            application.GetApplicantAge(),
-            //                            application.GetApplicantAddress(),
-            //                            out var isValidIdentity);
-            //
-            // if (!isValidIdentity)
-            // {
-            //     application.Decline();
-            //     return;
-            // }
-            #endregion
-
-            var status = (IdentityVerificationStatus) null;
-
-            _identityVerifier.Validate(application.GetApplicantName(),
-                                       application.GetApplicantAge(),
-                                       application.GetApplicantAddress(),
-                                       ref status);
-
-            if (!status.Passed)
+            if (!isValidIdentity)
             {
                 application.Decline();
                 return;
             }
 
-            #region block3
-            // _creditScorer.CalculateScore(application.GetApplicantName(),
-            //                              application.GetApplicantAddress());
-            //
-            // if (_creditScorer.Score < MinimumCreditScore)
-            // {
-            //     application.Decline();
-            //     return;
-            // }
-            #endregion
+            _creditScorer.CalculateScore(application.GetApplicantName(),
+                                         application.GetApplicantAddress());
+
+            if (_creditScorer.Score < _MinimumCreditScore)
+            {
+                application.Decline();
+                return;
+            }
 
             application.Accept();
         }
