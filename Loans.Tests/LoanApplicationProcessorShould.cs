@@ -77,6 +77,32 @@ namespace Loans.Tests
         }
 
         [Test]
+        public void InitializeIdentityVerifier()
+        {
+            var product = new LoanProduct(99, "Loan", 5.25m);
+            var amount = new LoanAmount("USD", 200_000);
+            var application = new LoanApplication(42,
+                                                  product,
+                                                  amount,
+                                                  "Sarah",
+                                                  25,
+                                                  "133 Pluralsight Drive, Draper, Utah",
+                                                  65_000);
+
+            var mockIdentityVerifier = new Mock<IIdentityVerifier>();
+
+            mockIdentityVerifier
+                .Setup(x => x.Validate("Sarah", 25, "133 Pluralsight Drive, Draper, Utah"))
+                .Returns(true);
+
+            mockIdentityVerifier.Verify(x => x.Validate(It.IsAny<string>(),
+                                                        It.IsAny<int>(),
+                                                        It.IsAny<string>()));
+
+            mockIdentityVerifier.VerifyNoOtherCalls();
+        }
+
+        [Test]
         public void CalculateScore()
         {
             var product = new LoanProduct(99, "Loan", 5.25m);
