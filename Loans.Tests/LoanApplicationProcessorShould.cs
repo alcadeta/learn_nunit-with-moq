@@ -69,6 +69,9 @@ namespace Loans.Tests
                                                    mockCreditScorer.Object);
             sut.Process(application);
 
+            mockCreditScorer.VerifyGet(x => x.ScoreResult.ScoreValue.Score, Times.Once);
+            // mockCreditScorer.VerifySet(x => x.Count = It.IsAny<int>(), Times.Once);
+
             Assert.That(application.GetIsAccepted(), Is.True);
             Assert.That(mockCreditScorer.Object.Count, Is.EqualTo(1));
         }
